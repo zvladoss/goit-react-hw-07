@@ -4,7 +4,19 @@ import s from "./ContactForm.module.css";
 import * as Yup from "yup";
 import FormInput from "../FormInput/FormInput";
 import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contactsSlice";
+import { addContact } from "../../redux/contactOps";
+
+const phoneRegex = /(?:\+|\d)[\d\-\(\) ]{9,}\d/g;
+const contactSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, "Too short!")
+    .max(50, "Too long!")
+    .required("Required!"),
+  number: Yup.string()
+    .matches(phoneRegex, "Invalid phone number!")
+    .min(13, "Too short!")
+    .required("Required!"),
+});
 
 const ContactForm = () => {
   const dispatch = useDispatch();
@@ -17,6 +29,7 @@ const ContactForm = () => {
     };
 
     dispatch(addContact(newContact));
+    actions.setSubmitting(false);
     actions.resetForm();
   };
 
@@ -24,19 +37,6 @@ const ContactForm = () => {
     name: "",
     number: "",
   };
-
-  const phoneRegex = /(?:\+|\d)[\d\-\(\) ]{9,}\d/g;
-
-  const contactSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Too short!")
-      .max(50, "Too long!")
-      .required("Required!"),
-    number: Yup.string()
-      .matches(phoneRegex, "Invalid phone number!")
-      .min(13, "Too short!")
-      .required("Required!"),
-  });
 
   return (
     <div className={s.formWrapper}>
